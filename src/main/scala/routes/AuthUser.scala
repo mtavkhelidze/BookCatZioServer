@@ -8,7 +8,7 @@ import sttp.tapir.ztapir.*
 import zio.*
 
 object AuthUser {
-  val login =
+  val login: ZServerEndpoint[AuthControl, Any] =
     User.login
       .zServerLogic(req =>
         ZIO

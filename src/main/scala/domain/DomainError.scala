@@ -19,11 +19,14 @@ import scala.reflect.ClassTag
 //}
 
 enum DomainError(final val $type: String = this.getClass.getSimpleName) {
-  case JsonDecodeFailure(details: String = "Failed to decode JSON.")
-      extends DomainError
+  val details: String
+  case JsonDecodeFailure(
+    override val details: String = "Failed to decode JSON.",
+  ) extends DomainError
 
   case InvalidCredentials(
-    details: String = "User with given email/password combination not found.",
+    override val details: String =
+      "User with given email/password combination not found.",
   ) extends DomainError
 }
 //  case CannotCompleteOperation(details: String = "Cannot complete operation.")

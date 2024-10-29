@@ -33,5 +33,4 @@ object User {
   final case class LoginRequest(email: Email, password: Password)
 
   final case class LoginResponse(jwtToken: JwtToken)
-
 }

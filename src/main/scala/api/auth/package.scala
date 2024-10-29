@@ -7,6 +7,7 @@ import com.github.plokhotnyuk.jsoniter_scala.macros.JsonCodecMaker
 import sttp.tapir.Schema
 
 package object user {
+  private[api] val endpoints = List(User.login)
   import User.{LoginRequest, LoginResponse}
 
   given Schema[LoginRequest] = Schema.derived[LoginRequest](using schemaConfig)

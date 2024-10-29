@@ -35,7 +35,7 @@ class DomainErrorTest
             val details = cls.details
             val jsonOne = s"""{"$$type":"${$type}","details":"$details"}"""
             val jsonTwo = s"""{"details":"$str", "$$type":"${$type}"}"""
-            readFromString(jsonOne).mustEqual(readFromString(jsonTwo))
+            readFromString(jsonOne) must equal(readFromString(jsonTwo))
           }
         }
       }
@@ -44,11 +44,9 @@ class DomainErrorTest
       "have $type discriminator and correct details set" in {
         forAll(Gen.alphaNumStr) { str =>
           errorCase.map(_(str)).foreach { error =>
-            writeToString(error)
-              .equals(
-                s"""{"$$type":"${error.getClass.getSimpleName}","details":"$str"}""",
-              )
-              .mustBe(true)
+            writeToString(error) must equal(
+              s"""{"$$type":"${error.getClass.getSimpleName}","details":"$str"}""",
+            )
           }
         }
       }

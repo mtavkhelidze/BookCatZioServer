@@ -2,8 +2,8 @@ package ge.zgharbi.books
 package control
 
 import domain.{DomainError, Email, JwtToken, Password}
+import domain.DomainError.InvalidCredentials
 
-import ge.zgharbi.books.domain.DomainError.InvalidCredentials
 import zio.*
 
 private[control] case class AuthControlLive() extends AuthControl {
