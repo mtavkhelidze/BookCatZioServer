@@ -15,18 +15,15 @@ import sttp.tapir.SchemaType.{SchemaWithValue, SCoproduct, SRef}
 import scala.reflect.ClassTag
 //
 //trait AsJson[T <: DomainError] {
-//  import CodecConfigs.{jsonIter}
+//  import CodecConfigs.{config}
 //}
 
 enum DomainError(final val $type: String = this.getClass.getSimpleName) {
-  val details: String
-  case JsonDecodeFailure(
-    override val details: String = "Failed to decode JSON.",
-  ) extends DomainError
+  case JsonDecodeFailure(details: String = "Failed to decode JSON.")
+      extends DomainError
 
   case InvalidCredentials(
-    override val details: String =
-      "User with given email/password combination not found.",
+    details: String = "User with given email/password combination not found.",
   ) extends DomainError
 }
 //  case CannotCompleteOperation(details: String = "Cannot complete operation.")
@@ -47,9 +44,9 @@ object WithJson {
 }
 
 object DomainError {
-  import CodecConfigs.{jsonIter, schemaConfig}
+  import CodecConfigs.{jsonIterConfig, schemaConfig}
 
-  given codec: JsonValueCodec[DomainError] = JsonCodecMaker.make(jsonIter)
+  given codec: JsonValueCodec[DomainError] = JsonCodecMaker.make(jsonIterConfig)
 
   given schema: Schema[DomainError] =
     Schema.derived[DomainError](using schemaConfig)

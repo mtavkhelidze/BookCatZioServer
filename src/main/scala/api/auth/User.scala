@@ -3,24 +3,22 @@
  */
 
 package ge.zgharbi.books
-package auth
+package api.auth
 
-import common.BaseEndpoints
-import domain.DomainError
+import api.*
+import domain.{DomainError, Email, JwtToken, Password}
+import domain.DomainError.*
 
 import sttp.model.StatusCode
-import sttp.tapir.*
 import sttp.tapir.json.jsoniter.jsonBody
+import sttp.tapir.ztapir.*
+import sttp.tapir.Endpoint
 
-import scala.reflect.ClassTag
-trait AuthApi extends BaseEndpoints {
+object User {
+  import api.auth.user.given
 
-  import codecs.given
-  import DomainError.*
-
-  val loginEndpoint
-    : Endpoint[Unit, LoginRequest, DomainError, LoginResponse, Any] = {
-    publicEndpoint
+  val login: Endpoint[Unit, LoginRequest, DomainError, LoginResponse, Any] =
+    endpoint
       .tag("Auth")
       .in("auth" / "user" / "login")
       .in(jsonBody[LoginRequest])
@@ -31,5 +29,9 @@ trait AuthApi extends BaseEndpoints {
           errorVariant(StatusCode.UnprocessableEntity, JsonDecodeFailure()),
         ),
       )
-  }
+
+  final case class LoginRequest(email: Email, password: Password)
+
+  final case class LoginResponse(jwtToken: JwtToken)
+
 }

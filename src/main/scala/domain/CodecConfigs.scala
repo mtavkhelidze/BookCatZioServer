@@ -13,10 +13,10 @@ object CodecConfigs {
   given schemaConfig: Configuration = Configuration.default
     .withDiscriminator("$type")
 
-  inline def jsonIter: CodecMakerConfig = CodecMakerConfig
+  inline def jsonIterConfig: CodecMakerConfig = CodecMakerConfig
     .withAlwaysEmitDiscriminator(true)
     .withDiscriminatorFieldName(Some("$type"))
+    .withRequireDefaultFields(true)
     .withRequireDiscriminatorFirst(false)
     .withTransientDefault(false)
-    .withRequireDefaultFields(true)
 }
