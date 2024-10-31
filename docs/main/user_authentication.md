@@ -22,7 +22,7 @@ config:
 ---
 sequenceDiagram
     participant Web Client
-    participant AuthApi
+    create participant AuthApi as auth.user.Login
     participant AuthCtrl
     participant JwtService
     participant AuthService

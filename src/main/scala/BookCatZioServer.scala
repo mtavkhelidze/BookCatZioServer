@@ -4,8 +4,9 @@
 
 package ge.zgharbi.books
 
-import common.BaseEndpoints
-import services.live.DummyAuthService
+import control.AuthControl
+import http.Handlers.defaultErrorHandler
+import http.Routes.apiRoutes
 
 import sttp.tapir.docs.openapi.OpenAPIDocsOptions
 import sttp.tapir.server.interceptor.cors.CORSInterceptor
@@ -14,7 +15,6 @@ import sttp.tapir.swagger.bundle.SwaggerInterpreter
 import zio.*
 import zio.http.*
 import zio.logging.backend.SLF4J
-
 object BookCatZioServer extends ZIOAppDefault {
 
   override val bootstrap: ZLayer[ZIOAppArgs, Any, Any] =
@@ -22,27 +22,24 @@ object BookCatZioServer extends ZIOAppDefault {
 
   private val serverOptions: ZioHttpServerOptions[Any] =
     ZioHttpServerOptions.customiseInterceptors
-      .defaultHandlers(BaseEndpoints.defaultErrorHandler, true)
+      .defaultHandlers(defaultErrorHandler, true)
       .appendInterceptor(CORSInterceptor.default)
       .options
 
   override def run = {
-    Console.print(Defs.Banner) *> serverEndpoints
-      .flatMap(eps =>
-        Server
-          .serve(ZioHttpInterpreter(serverOptions).toHttp(eps))
-      )
-      .provide(Server.defaultWithPort(Defs.SERVER_PORT), DummyAuthService.layer)
+    Server
+      .serve(ZioHttpInterpreter(serverOptions).toHttp(serverEndpoints))
+      .provide(Server.defaultWithPort(8080), AuthControl.layer)
   }
 
-  private def serverEndpoints =
-    for {
-      api <- ServerEndpoints.routes
-      sw = SwaggerInterpreter(openAPIInterpreterOptions =
-        OpenAPIDocsOptions.default.copy(defaultDecodeFailureOutput =
-          _ => Option.empty,
-        ),
-      )
-        .fromServerEndpoints(api, """Book Cat ¯\_(ツ)_/¯ Zio""", "1.0.0")
-    } yield (api ++ sw)
+  private def serverEndpoints = {
+    val sw = SwaggerInterpreter(openAPIInterpreterOptions =
+      OpenAPIDocsOptions.default.copy(
+        defaultDecodeFailureOutput = _ => Option.empty,
+        markOptionsAsNullable = true,
+      ),
+    )
+      .fromServerEndpoints(apiRoutes, """Book Cat ¯\_(ツ)_/¯ Zio""", "1.0.0")
+    apiRoutes ++ sw
+  }
 }
