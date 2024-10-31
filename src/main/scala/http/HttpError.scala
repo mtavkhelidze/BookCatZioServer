@@ -7,6 +7,7 @@ package http
 
 import com.github.plokhotnyuk.jsoniter_scala.core.*
 import com.github.plokhotnyuk.jsoniter_scala.macros.*
+import sttp.model.StatusCode
 import sttp.tapir.*
 import sttp.tapir.Schema.*
 import sttp.tapir.Schema.annotations.*
@@ -17,6 +18,7 @@ import scala.reflect.ClassTag
 object HttpErrorMessage {
   type Type = JSON_DECODE_FAILURE | INVALID_CREDENTIALS | NONE
 
+  // @note: at some point we shall translate those
   type INVALID_CREDENTIALS = "Invalid credentials."
   type JSON_DECODE_FAILURE = "Failed to decode JSON."
   type NONE = ""
@@ -56,10 +58,18 @@ object WithJson {
 
 object HttpError {
   private val detailsMessageExample = Some("Error details, can be `null`.")
-  inline def exmaple[E <: HttpError: ClassTag]: HttpError = {
-    val c = summon[ClassTag[E]]
+  inline def httpCodeFor[E <: HttpError: ClassTag]: StatusCode = {
+    val c: ClassTag[E] = summon[ClassTag[E]]
     inline c match {
-      case x: ClassTag[JsonDecodeFailure] =>
+      case _: ClassTag[JsonDecodeFailure]  => StatusCode.UnprocessableEntity
+      case _: ClassTag[InvalidCredentials] => StatusCode.Unauthorized
+    }
+
+  }
+  inline def exmapleOf[E <: HttpError: ClassTag]: HttpError = {
+    val c: ClassTag[E] = summon[ClassTag[E]]
+    inline c match {
+      case _: ClassTag[JsonDecodeFailure] =>
         JsonDecodeFailure(detailsMessageExample)
       case _: ClassTag[InvalidCredentials] =>
         InvalidCredentials(detailsMessageExample)

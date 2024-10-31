@@ -17,14 +17,14 @@ package object api {
       JsonDecodeFailure(Some(e)),
     )
 
-  inline def errorVariant[ErrorClassType <: HttpError: ClassTag](
-    statusCode: StatusCode,
-  ): EndpointOutput.OneOfVariant[HttpError] = {
-    val example = HttpError.exmaple[ErrorClassType]
+  inline def errorVariant[ErrorClassType <: HttpError: ClassTag]
+    : EndpointOutput.OneOfVariant[HttpError] = {
+    val example = HttpError.exmapleOf[ErrorClassType]
+    val statusCode = HttpError.httpCodeFor[ErrorClassType]
     oneOfVariantClassMatcher(
       statusCode,
       jsonBody[HttpError]
-        .example(example)
+        .example(HttpError.exmapleOf[ErrorClassType])
         .description(example.message),
       classTag[ErrorClassType].runtimeClass,
     )

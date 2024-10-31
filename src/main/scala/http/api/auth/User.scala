@@ -25,8 +25,8 @@ object User {
       .out(jsonBody[LoginResponse])
       .errorOut(
         oneOf[HttpError](
-          errorVariant[InvalidCredentials](StatusCode.Unauthorized),
-          errorVariant[JsonDecodeFailure](StatusCode.UnprocessableEntity),
+          errorVariant[InvalidCredentials],
+          errorVariant[JsonDecodeFailure],
         ),
       )
 
