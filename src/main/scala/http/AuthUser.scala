@@ -1,8 +1,8 @@
 package ge.zgharbi.books
-package routes
+package http
 
-import api.auth.User
 import control.AuthControl
+import http.api.auth.User
 
 import sttp.tapir.ztapir.*
 import zio.*

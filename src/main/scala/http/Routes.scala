@@ -1,7 +1,8 @@
 package ge.zgharbi.books
+package http
 
 import control.AuthControl
 
-package object routes {
+object Routes {
   val apiRoutes = List(AuthUser.login)
 }

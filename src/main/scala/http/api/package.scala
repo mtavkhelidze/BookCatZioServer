@@ -1,7 +1,7 @@
 package ge.zgharbi.books
+package http
 
-import domain.DomainError
-import domain.DomainError.JsonDecodeFailure
+import http.HttpError.{*, given}
 
 import sttp.model.StatusCode
 import sttp.tapir.{oneOfVariantClassMatcher, statusCode, EndpointOutput}
@@ -12,20 +12,20 @@ import scala.reflect.{classTag, ClassTag}
 
 package object api {
   def defaultErrorHandler(e: String): ValuedEndpointOutput[?] =
-    ValuedEndpointOutput[DomainError](
-      statusCode(StatusCode.UnprocessableEntity).and(jsonBody[DomainError]),
-      JsonDecodeFailure(e),
+    ValuedEndpointOutput[HttpError](
+      statusCode(StatusCode.UnprocessableEntity).and(jsonBody[HttpError]),
+      JsonDecodeFailure(Some(e)),
     )
 
-  def errorVariant[ErrorClassType <: DomainError: ClassTag](
+  inline def errorVariant[ErrorClassType <: HttpError: ClassTag](
     statusCode: StatusCode,
-    example: ErrorClassType,
-  ): EndpointOutput.OneOfVariant[DomainError] = {
+  ): EndpointOutput.OneOfVariant[HttpError] = {
+    val example = HttpError.exmaple[ErrorClassType]
     oneOfVariantClassMatcher(
       statusCode,
-      jsonBody[DomainError]
+      jsonBody[HttpError]
         .example(example)
-        .description(example.getClass.getSimpleName),
+        .description(example.message),
       classTag[ErrorClassType].runtimeClass,
     )
   }

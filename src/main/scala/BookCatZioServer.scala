@@ -4,8 +4,9 @@
 
 package ge.zgharbi.books
 
-import api.defaultErrorHandler
 import control.AuthControl
+import http.Handlers.defaultErrorHandler
+import http.Routes.apiRoutes
 
 import sttp.tapir.docs.openapi.OpenAPIDocsOptions
 import sttp.tapir.server.interceptor.cors.CORSInterceptor
@@ -33,15 +34,12 @@ object BookCatZioServer extends ZIOAppDefault {
 
   private def serverEndpoints = {
     val sw = SwaggerInterpreter(openAPIInterpreterOptions =
-      OpenAPIDocsOptions.default.copy(defaultDecodeFailureOutput =
-        _ => Option.empty,
+      OpenAPIDocsOptions.default.copy(
+        defaultDecodeFailureOutput = _ => Option.empty,
+        markOptionsAsNullable = true,
       ),
     )
-      .fromServerEndpoints(
-        routes.apiRoutes,
-        """Book Cat ¯\_(ツ)_/¯ Zio""",
-        "1.0.0",
-      )
-    routes.apiRoutes ++ sw
+      .fromServerEndpoints(apiRoutes, """Book Cat ¯\_(ツ)_/¯ Zio""", "1.0.0")
+    apiRoutes ++ sw
   }
 }

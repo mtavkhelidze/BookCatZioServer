@@ -3,11 +3,12 @@
  */
 
 package ge.zgharbi.books
-package api.auth
+package http.api.auth
 
-import api.*
-import domain.{DomainError, Email, JwtToken, Password}
-import domain.DomainError.*
+import domain.{Email, JwtToken, Password}
+import http.HttpError
+import http.HttpError.*
+import http.api.errorVariant
 
 import sttp.model.StatusCode
 import sttp.tapir.json.jsoniter.jsonBody
@@ -15,18 +16,17 @@ import sttp.tapir.ztapir.*
 import sttp.tapir.Endpoint
 
 object User {
-  import api.auth.user.given
 
-  val login: Endpoint[Unit, LoginRequest, DomainError, LoginResponse, Any] =
+  val login: Endpoint[Unit, LoginRequest, HttpError, LoginResponse, Any] =
     endpoint
       .tag("Auth")
       .in("auth" / "user" / "login")
       .in(jsonBody[LoginRequest])
       .out(jsonBody[LoginResponse])
       .errorOut(
-        oneOf[DomainError](
-          errorVariant(StatusCode.Unauthorized, InvalidCredentials()),
-          errorVariant(StatusCode.UnprocessableEntity, JsonDecodeFailure()),
+        oneOf[HttpError](
+          errorVariant[InvalidCredentials](StatusCode.Unauthorized),
+          errorVariant[JsonDecodeFailure](StatusCode.UnprocessableEntity),
         ),
       )
 

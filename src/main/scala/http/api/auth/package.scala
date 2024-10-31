@@ -1,12 +1,13 @@
 package ge.zgharbi.books
-package api.auth
-import domain.CodecConfigs.{jsonIterConfig, schemaConfig}
+package http.api
+
+import domain.config.{jsonIterConfig, schemaConfig}
 
 import com.github.plokhotnyuk.jsoniter_scala.core.JsonValueCodec
 import com.github.plokhotnyuk.jsoniter_scala.macros.JsonCodecMaker
 import sttp.tapir.Schema
 
-package object user {
+package object auth {
   private[api] val endpoints = List(User.login)
   import User.{LoginRequest, LoginResponse}
 
