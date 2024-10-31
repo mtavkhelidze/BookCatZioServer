@@ -3,7 +3,7 @@ package ge.zgharbi.books
 import http.HttpError.{InvalidCredentials, JsonDecodeFailure}
 import http.HttpError
 
-package object common {
+package object http {
 
   import scala.compiletime.{constValue, constValueTuple, error}
   import scala.deriving.Mirror
@@ -14,7 +14,7 @@ package object common {
       case "JsonDecodeFailure"  => JsonDecodeFailure()
     }
   }
-  inline def domainErrorChildren(using
+  inline def httpErrorChildren(using
     m: Mirror.SumOf[HttpError],
   ): List[HttpError] =
     val values = constValueTuple[m.MirroredElemLabels].productIterator.toList

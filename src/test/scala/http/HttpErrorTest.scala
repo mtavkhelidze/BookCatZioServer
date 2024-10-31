@@ -3,9 +3,7 @@
  */
 
 package ge.zgharbi.books
-package common
-
-import http.HttpError
+package http
 
 import com.github.plokhotnyuk.jsoniter_scala.core.{readFromString, writeToString}
 import org.scalatest.matchers.must.Matchers
@@ -19,7 +17,7 @@ class HttpErrorTest
 
   "DomainError JSON encoding/decoding" must {
     "be isomorphic" in {
-      domainErrorChildren.foreach { error =>
+      httpErrorChildren.foreach { error =>
         readFromString[HttpError](writeToString(error)) must equal(error)
       }
     }
@@ -27,14 +25,14 @@ class HttpErrorTest
   "DomainError" when {
     "encoded to JSON" must {
       s"have ${Defs.JSON_ENTITY_DISCRIMINATOR}, message, and details fields present" in {
-        domainErrorChildren.foreach { error =>
-          writeToString(error) must (include(Defs.JSON_ENTITY_DISCRIMINATOR) and include(
-            "message",
-          ) and include("details"))
+        httpErrorChildren.foreach { error =>
+          writeToString(error) must (include(
+            Defs.JSON_ENTITY_DISCRIMINATOR,
+          ) and include("message") and include("details"))
         }
       }
       s"have ${Defs.JSON_ENTITY_DISCRIMINATOR} set to case class name" in {
-        domainErrorChildren.foreach { error =>
+        httpErrorChildren.foreach { error =>
           writeToString(error) must include(
             s""""${Defs.JSON_ENTITY_DISCRIMINATOR}":"${error.getClass.getSimpleName}"""",
           )
@@ -43,7 +41,7 @@ class HttpErrorTest
     }
     "encoded to JSON _without_ details" must {
       "have details field set to `null`" in {
-        domainErrorChildren.foreach { error =>
+        httpErrorChildren.foreach { error =>
           writeToString(error) must include(s""""details":null""")
         }
       }
