@@ -10,7 +10,7 @@ import sttp.tapir.ztapir.RIOMonadError
 
 import scala.concurrent.Future
 
-class UserLoginTest extends AsyncFlatSpec with Matchers {
+class UserApiTest extends AsyncFlatSpec with Matchers {
 //  val backendStub =
 //    TapirStubInterpreter(SttpBackendStub.apply(new RIOMonadError[Any]))
 //      .whenServerEndpoint(UserRoute.login)

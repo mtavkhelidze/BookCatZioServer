@@ -5,11 +5,11 @@
 package ge.zgharbi.books
 package api.auth
 
+import api.errorVariant
 import domain.{Email, JwtToken, Password}
 import domain.config.{jsonIterConfig, schemaConfig}
 import http.HttpError
 import http.HttpError.*
-import api.errorVariant
 
 import sttp.tapir.{Endpoint, Schema}
 import sttp.tapir.json.jsoniter.jsonBody
@@ -19,22 +19,23 @@ case class LoginRequest(email: Email, password: Password)
 
 case class LoginResponse(jwtToken: JwtToken)
 
-object UserLogin {
+object UserApi {
   import codecs.given
 
-  val userLogin: Endpoint[Unit, LoginRequest, HttpError, LoginResponse, Any] =
+  val login: Endpoint[Unit, (Email, Password), HttpError, JwtToken, Any] =
     endpoint
       .tag("Auth")
       .in("auth" / "user" / "login")
       .in(jsonBody[LoginRequest])
+      .mapIn(req => (req.email, req.password))(LoginRequest.apply)
       .out(jsonBody[LoginResponse])
+      .mapOut(_.jwtToken)(token => LoginResponse(token))
       .errorOut(
         oneOf[HttpError](
           errorVariant[InvalidCredentials],
           errorVariant[JsonDecodeFailure],
         ),
       )
-  val routes = List(userLogin)
 }
 
 private object codecs {

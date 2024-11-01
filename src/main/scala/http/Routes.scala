@@ -1,8 +1,8 @@
 package ge.zgharbi.books
 package http
 
-import control.AuthControl
+import http.routes.auth.UserRoute
 
 object Routes {
-  val apiRoutes = List(MishaAuthUser.login)
+  val apiRoutes = List(UserRoute.login)
 }

@@ -7,6 +7,6 @@ import sttp.tapir.Endpoint
 
 package object auth {
   val endpoints: List[Endpoint[Unit, ?, HttpError, ?, Any]] = List(
-    UserLogin.userLogin,
+    UserApi.login,
   )
 }
