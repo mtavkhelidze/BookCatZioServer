@@ -4,6 +4,7 @@
 
 package ge.zgharbi.books
 
+import control.AuthControl
 import http.Handlers.defaultErrorHandler
 import http.Routes.apiRoutes
 
@@ -28,7 +29,7 @@ object BookCatZioServer extends ZIOAppDefault {
   override def run = {
     Server
       .serve(ZioHttpInterpreter(serverOptions).toHttp(serverEndpoints))
-      .provide(Server.defaultWithPort(8080))
+      .provide(Server.defaultWithPort(8080), AuthControl.live)
   }
 
   private def serverEndpoints = {
