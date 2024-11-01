@@ -4,5 +4,5 @@ package http
 import control.AuthControl
 
 object Routes {
-  val apiRoutes = List(AuthUser.login)
+  val apiRoutes = List(MishaAuthUser.login)
 }

@@ -1,6 +1,6 @@
 package ge.zgharbi.books
-package http
 
+import http.HttpError
 import http.HttpError.{*, given}
 
 import sttp.model.StatusCode
@@ -11,6 +11,7 @@ import sttp.tapir.server.model.ValuedEndpointOutput
 import scala.reflect.{classTag, ClassTag}
 
 package object api {
+
   def defaultErrorHandler(e: String): ValuedEndpointOutput[?] =
     ValuedEndpointOutput[HttpError](
       statusCode(StatusCode.UnprocessableEntity).and(jsonBody[HttpError]),

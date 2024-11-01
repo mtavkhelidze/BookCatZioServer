@@ -1,5 +1,5 @@
 package ge.zgharbi.books
-package http.api
+package api
 
 import sttp.monad.MonadError
 import sttp.tapir.server.interceptor.CustomiseInterceptors

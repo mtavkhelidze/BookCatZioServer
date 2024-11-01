@@ -1,18 +1,18 @@
 package ge.zgharbi.books
 package http
 
+import api.auth.*
 import control.AuthControl
-import http.api.auth.User
 
 import sttp.tapir.ztapir.*
 import zio.*
 
-object AuthUser {
+object MishaAuthUser {
   val login: ZServerEndpoint[AuthControl, Any] =
-    User.login
+    UserLogin.userLogin
       .zServerLogic(req =>
         ZIO
           .serviceWithZIO[AuthControl](_.userLogin(req.email, req.password))
-          .map(token => User.LoginResponse(token)),
+          .map(token => LoginResponse(token)),
       )
 }

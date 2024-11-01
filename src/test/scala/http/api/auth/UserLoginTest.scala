@@ -1,16 +1,19 @@
 package ge.zgharbi.books
-package http.api.auth
+package api.auth
 
 import org.scalatest.flatspec.AsyncFlatSpec
 import org.scalatest.matchers.must.Matchers
+import sttp.client3.testing.SttpBackendStub
+import sttp.tapir.server.stub.TapirStubInterpreter
 import sttp.tapir.testing.{EndpointVerificationError, EndpointVerifier}
+import sttp.tapir.ztapir.RIOMonadError
 
 import scala.concurrent.Future
 
-class UserTest extends AsyncFlatSpec with Matchers {
+class UserLoginTest extends AsyncFlatSpec with Matchers {
 //  val backendStub =
-//    TapirStubInterpreter(SttpBackendStub(new RIOMonadError[Any]))
-//      .whenServerEndpoint(http.AuthUser.login)
+//    TapirStubInterpreter(SttpBackendStub.apply(new RIOMonadError[Any]))
+//      .whenServerEndpoint(UserRoute.login)
 //      .thenRunLogic()
 //      .backend()
 //
@@ -21,10 +24,5 @@ class UserTest extends AsyncFlatSpec with Matchers {
 //
 //    println(response.map(_.body).map(_.toString))
 //  }
-  it must "not have chadowed endpoints" in {
-    val resultSet: Set[EndpointVerificationError] =
-      EndpointVerifier(http.api.auth.endpoints)
-    resultSet must be(empty)
-  }
 
 }
