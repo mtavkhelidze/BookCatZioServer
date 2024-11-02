@@ -20,5 +20,5 @@ object AuthControl {
 
 private final case class AuthControlLive() extends AuthControl {
   override def userLogin = (email, password) =>
-    ZIO.fail(HttpError.InvalidCredentials(Some("a problem")))
+    ZIO.fail(HttpError.InvalidCredentialsError())
 }

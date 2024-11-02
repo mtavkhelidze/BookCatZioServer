@@ -1,7 +1,7 @@
 package ge.zgharbi.books
 package http
 
-import http.HttpError.JsonDecodeFailure
+import http.HttpError.JsonDecodeFailureError
 
 import sttp.model.StatusCode
 import sttp.tapir.json.jsoniter.jsonBody
@@ -12,6 +12,6 @@ object Handlers {
   def defaultErrorHandler(e: String): ValuedEndpointOutput[?] =
     ValuedEndpointOutput[HttpError](
       statusCode(StatusCode.UnprocessableEntity).and(jsonBody[HttpError]),
-      JsonDecodeFailure(Some(e)),
+      JsonDecodeFailureError(List(e)),
     )
 }

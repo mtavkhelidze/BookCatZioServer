@@ -26,15 +26,16 @@ object HttpErrorMessage {
 
 enum HttpError(
   val message: HttpErrorMessage.Type = constValue[HttpErrorMessage.NONE],
+  val details: List[String] = List(),
 ) {
-  case JsonDecodeFailure(
-    val details: Option[String] = None,
+  case JsonDecodeFailureError(
+    override val details: List[String] = List(),
     override val message: HttpErrorMessage.JSON_DECODE_FAILURE =
       constValue[HttpErrorMessage.JSON_DECODE_FAILURE],
   ) extends HttpError
 
-  case InvalidCredentials(
-    val details: Option[String] = None,
+  case InvalidCredentialsError(
+    override val details: List[String] = List(),
     override val message: HttpErrorMessage.INVALID_CREDENTIALS =
       constValue[HttpErrorMessage.INVALID_CREDENTIALS],
   ) extends HttpError
@@ -57,22 +58,22 @@ object WithJson {
 }
 
 object HttpError {
-  private val detailsMessageExample = Some("Error details, can be `null`.")
+  private val detailsMessageExample = List("Details about the error.", "Can be empty.")
   inline def httpCodeFor[E <: HttpError: ClassTag]: StatusCode = {
     val c: ClassTag[E] = summon[ClassTag[E]]
     inline c match {
-      case _: ClassTag[JsonDecodeFailure]  => StatusCode.UnprocessableEntity
-      case _: ClassTag[InvalidCredentials] => StatusCode.Unauthorized
+      case _: ClassTag[JsonDecodeFailureError]  => StatusCode.UnprocessableEntity
+      case _: ClassTag[InvalidCredentialsError] => StatusCode.Unauthorized
     }
 
   }
   inline def exmapleOf[E <: HttpError: ClassTag]: HttpError = {
     val c: ClassTag[E] = summon[ClassTag[E]]
     inline c match {
-      case _: ClassTag[JsonDecodeFailure] =>
-        JsonDecodeFailure(detailsMessageExample)
-      case _: ClassTag[InvalidCredentials] =>
-        InvalidCredentials(detailsMessageExample)
+      case _: ClassTag[JsonDecodeFailureError] =>
+        JsonDecodeFailureError(detailsMessageExample)
+      case _: ClassTag[InvalidCredentialsError] =>
+        InvalidCredentialsError()
     }
   }
 

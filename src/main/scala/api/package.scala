@@ -15,7 +15,7 @@ package object api {
   def defaultErrorHandler(e: String): ValuedEndpointOutput[?] =
     ValuedEndpointOutput[HttpError](
       statusCode(StatusCode.UnprocessableEntity).and(jsonBody[HttpError]),
-      JsonDecodeFailure(Some(e)),
+      JsonDecodeFailureError(List(e)),
     )
 
   inline def errorVariant[ErrorClassType <: HttpError: ClassTag]

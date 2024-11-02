@@ -24,6 +24,7 @@ object UserApi {
 
   val login: Endpoint[Unit, (Email, Password), HttpError, JwtToken, Any] =
     endpoint
+      .post
       .tag("Auth")
       .in("auth" / "user" / "login")
       .in(jsonBody[LoginRequest])
@@ -32,8 +33,8 @@ object UserApi {
       .mapOut(_.jwtToken)(token => LoginResponse(token))
       .errorOut(
         oneOf[HttpError](
-          errorVariant[InvalidCredentials],
-          errorVariant[JsonDecodeFailure],
+          errorVariant[InvalidCredentialsError],
+          errorVariant[JsonDecodeFailureError],
         ),
       )
 }

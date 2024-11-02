@@ -1,28 +1,36 @@
 package ge.zgharbi.books
 package api.auth
 
-import org.scalatest.flatspec.AsyncFlatSpec
-import org.scalatest.matchers.must.Matchers
+import control.AuthControl
+import http.routes.auth.UserRoute
+
+import sttp.client3.*
 import sttp.client3.testing.SttpBackendStub
+import sttp.model.{StatusCode, Uri}
 import sttp.tapir.server.stub.TapirStubInterpreter
-import sttp.tapir.testing.{EndpointVerificationError, EndpointVerifier}
-import sttp.tapir.ztapir.RIOMonadError
+import sttp.tapir.ztapir.*
+import zio.*
+import zio.test.*
 
-import scala.concurrent.Future
+object UserApiTest extends ZIOSpecDefault {
 
-class UserApiTest extends AsyncFlatSpec with Matchers {
-//  val backendStub =
-//    TapirStubInterpreter(SttpBackendStub.apply(new RIOMonadError[Any]))
-//      .whenServerEndpoint(UserRoute.login)
-//      .thenRunLogic()
-//      .backend()
-//
-//  it must "work" in {
-//    val response = basicRequest
-//      .get(uri"http://test.com/api/")
-//      .send(backendStub)
-//
-//    println(response.map(_.body).map(_.toString))
-//  }
+  val path = uri"${UserApi.login.showShort.toString.replace("* ", "")}"
 
+  def spec = suite("UserApiTest") {
+    test("simple test") {
+      val backendStub = TapirStubInterpreter(
+        SttpBackendStub.apply(new RIOMonadError[AuthControl]),
+      )
+        .whenServerEndpoint(UserRoute.login)
+        .thenRunLogic()
+        .backend()
+
+      for {
+        response <- basicRequest
+          .get(path)
+          .send(backendStub)
+        _ <- Console.printLine(response.code)
+      } yield assertTrue(response.code == StatusCode.NotFound)
+    }
+  }.provide(AuthControl.live)
 }

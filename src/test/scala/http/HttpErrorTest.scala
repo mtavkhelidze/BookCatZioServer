@@ -40,9 +40,9 @@ class HttpErrorTest
       }
     }
     "encoded to JSON _without_ details" must {
-      "have details field set to `null`" in {
+      "have details field set to empty array" in {
         httpErrorChildren.foreach { error =>
-          writeToString(error) must include(s""""details":null""")
+          writeToString(error) must include(""""details":[]""")
         }
       }
     }

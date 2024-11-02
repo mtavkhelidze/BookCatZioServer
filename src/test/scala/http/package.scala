@@ -1,6 +1,6 @@
 package ge.zgharbi.books
 
-import http.HttpError.{InvalidCredentials, JsonDecodeFailure}
+import http.HttpError.{InvalidCredentialsError, JsonDecodeFailureError}
 import http.HttpError
 
 package object http {
@@ -10,8 +10,8 @@ package object http {
 
   extension (s: String) {
     def toError: HttpError = s match {
-      case "InvalidCredentials" => InvalidCredentials()
-      case "JsonDecodeFailure"  => JsonDecodeFailure()
+      case "InvalidCredentials" => InvalidCredentialsError()
+      case "JsonDecodeFailure"  => JsonDecodeFailureError()
     }
   }
   inline def httpErrorChildren(using

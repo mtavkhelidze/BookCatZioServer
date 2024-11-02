@@ -22,7 +22,7 @@ object BookCatZioServer extends ZIOAppDefault {
 
   private val serverOptions: ZioHttpServerOptions[Any] =
     ZioHttpServerOptions.customiseInterceptors
-      .defaultHandlers(defaultErrorHandler, true)
+      .defaultHandlers(defaultErrorHandler, false)
       .appendInterceptor(CORSInterceptor.default)
       .options
 

@@ -7,11 +7,11 @@ import sttp.tapir.generic.Configuration
 package object config {
   given schemaConfig: Configuration = Configuration.default
     .withDiscriminator(Defs.JSON_ENTITY_DISCRIMINATOR)
-    
+
   inline def jsonIterConfig: CodecMakerConfig = CodecMakerConfig
     .withAlwaysEmitDiscriminator(true)
     .withDiscriminatorFieldName(Some(Defs.JSON_ENTITY_DISCRIMINATOR))
-    .withTransientEmpty(true)
+    .withTransientEmpty(false)
     .withTransientDefault(false)
     .withTransientNone(false)
     .withRequireDefaultFields(true)
