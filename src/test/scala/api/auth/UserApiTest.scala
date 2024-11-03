@@ -6,7 +6,7 @@ import http.routes.auth.UserRoute
 
 import sttp.client3.*
 import sttp.client3.testing.SttpBackendStub
-import sttp.model.{StatusCode, Uri}
+import sttp.model.StatusCode
 import sttp.tapir.server.stub.TapirStubInterpreter
 import sttp.tapir.ztapir.*
 import zio.*
@@ -27,9 +27,8 @@ object UserApiTest extends ZIOSpecDefault {
 
       for {
         response <- basicRequest
-          .get(path)
+          .post(path)
           .send(backendStub)
-        _ <- Console.printLine(response.code)
       } yield assertTrue(response.code == StatusCode.NotFound)
     }
   }.provide(AuthControl.live)

@@ -5,7 +5,6 @@
 package ge.zgharbi.books
 
 import control.AuthControl
-import http.Handlers.defaultErrorHandler
 import http.Routes.apiRoutes
 
 import sttp.tapir.docs.openapi.OpenAPIDocsOptions
@@ -22,7 +21,8 @@ object BookCatZioServer extends ZIOAppDefault {
 
   private val serverOptions: ZioHttpServerOptions[Any] =
     ZioHttpServerOptions.customiseInterceptors
-      .defaultHandlers(defaultErrorHandler, false)
+      // .defaultHandlers(defaultErrorHandler, false)
+//      .exceptionHandler(Handlers.excheptionHandler)
       .appendInterceptor(CORSInterceptor.default)
       .options
 

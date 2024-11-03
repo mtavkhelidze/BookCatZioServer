@@ -16,18 +16,26 @@ import scala.compiletime.constValue
 import scala.reflect.ClassTag
 
 object HttpErrorMessage {
-  type Type = JSON_DECODE_FAILURE | INVALID_CREDENTIALS | NONE
+  type Type = NONE | JSON_DECODE_FAILURE | INVALID_CREDENTIALS |
+    INTERNAL_SERVER_ERROR
 
   // @note: at some point we shall translate those
   type INVALID_CREDENTIALS = "Invalid credentials."
   type JSON_DECODE_FAILURE = "Failed to decode JSON."
+  type INTERNAL_SERVER_ERROR = "Internal server error."
   type NONE = ""
 }
 
+// @note: This probably could be simpler
 enum HttpError(
-  val message: HttpErrorMessage.Type = constValue[HttpErrorMessage.NONE],
   val details: List[String] = List(),
+  val message: HttpErrorMessage.Type = constValue[HttpErrorMessage.NONE],
 ) {
+  case InternalServerError(
+    override val details: List[String] = List(),
+    override val message: HttpErrorMessage.INTERNAL_SERVER_ERROR =
+      constValue[HttpErrorMessage.INTERNAL_SERVER_ERROR],
+  ) extends HttpError
   case JsonDecodeFailureError(
     override val details: List[String] = List(),
     override val message: HttpErrorMessage.JSON_DECODE_FAILURE =
@@ -44,26 +52,29 @@ enum HttpError(
 //      extends DomainError("CannotCompleteOperation")
 //  case InvalidCredentials(details: String = "Invalid credentials.")
 //      extends DomainError("InvalidCredentials")
-
-trait WithJson
-
-object WithJson {
-  extension (json: String) {
-    inline def fromJson[T](using codec: JsonValueCodec[T]): T =
-      readFromString[T](json)
-  }
-  extension [T](t: T) {
-    inline def asJson(using codec: JsonValueCodec[T]) = writeToString[T](t)
-  }
-}
+//
+//trait WithJson
+//
+//object WithJson {
+//  extension (json: String) {
+//    inline def fromJson[T](using codec: JsonValueCodec[T]): T =
+//      readFromString[T](json)
+//  }
+//  extension [T](t: T) {
+//    inline def asJson(using codec: JsonValueCodec[T]) = writeToString[T](t)
+//  }
+//}
 
 object HttpError {
-  private val detailsMessageExample = List("Details about the error.", "Can be empty.")
+  private val detailsMessageExample =
+    List("Details about the error.", "Can be empty.")
+
   inline def httpCodeFor[E <: HttpError: ClassTag]: StatusCode = {
     val c: ClassTag[E] = summon[ClassTag[E]]
     inline c match {
-      case _: ClassTag[JsonDecodeFailureError]  => StatusCode.UnprocessableEntity
+      case _: ClassTag[JsonDecodeFailureError] => StatusCode.UnprocessableEntity
       case _: ClassTag[InvalidCredentialsError] => StatusCode.Unauthorized
+      case _ => StatusCode.InternalServerError
     }
 
   }

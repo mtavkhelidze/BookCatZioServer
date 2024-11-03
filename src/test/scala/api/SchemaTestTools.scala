@@ -1,9 +1,6 @@
 package ge.zgharbi.books
 package api
 
-import sttp.monad.MonadError
-import sttp.tapir.server.interceptor.CustomiseInterceptors
-
 object SchemaTestTools {
 //  def serverOptions[F[_]]: MonadError[F] = {
 //    new CustomiseInterceptors[F, Any](_ => ())

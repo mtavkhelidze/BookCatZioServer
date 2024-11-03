@@ -82,3 +82,4 @@ docker / dockerfile := {
 // macros, incremental compilation just won't do.
 addCommandAlias("cleanCompile", "clean; compile")
 addCommandAlias("cleanReStart", "clean; reStart")
+addCommandAlias("cleanTestQuick", "clean; testQuick")
