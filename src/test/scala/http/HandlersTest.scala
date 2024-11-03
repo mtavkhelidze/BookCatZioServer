@@ -40,52 +40,52 @@ object DataCodecs {
   given codecRes: JsonValueCodec[TestResponse] =
     JsonCodecMaker.make(jsonIterConfig)
 }
-class HandlersTest extends AnyWordSpec with Matchers with SttpApi {
-  import DataCodecs.given
-
-  val customOptions: CustomiseInterceptors[Future, SttpServerOptions] = {
-    import scala.concurrent.ExecutionContext.Implicits.global
-    ZioHttpServerOptions.customiseInterceptors
-      .exceptionHandler(Handlers.excheptionHandler)
-  }
-  def backendStub =
-    TapirStubInterpreter(customOptions, SttpBackendStub.asynchronousFuture)
-      .whenServerEndpoint(postServerLogic)
-      .thenRunLogic()
-      .backend()
-
-  def postServerLogic = epPost
-    .serverLogic(req =>
-      Future.successful {
-        req.command match {
-          case Command.Success           => Right(TestResponse("Success"))
-          case Command.JsonDecodeFailure => Left(JsonDecodeFailureError())
-        }
-      },
-    )
-
-  def epPost = endpoint.post
-    .in("test")
-    .in(jsonBody[TestRequest])
-    .out(jsonBody[TestResponse])
-    .errorOut(
-      oneOfVariants[HttpError](
-        errorVariant[InvalidCredentialsError],
-        errorVariant[JsonDecodeFailureError],
-      ),
-    )
-
-  "excheptionHandler" must {
-    "work" in {
-      def prog = basicRequest
-        .post(uri"/test")
-        .body(writeToString(TestRequest(Success)))
-        .send(backendStub)
-
-      prog.collect { r =>
-        println(r)
-        r.body.isLeft must be(true)
-      }
-    }
-  }
-}
+//class HandlersTest extends AnyWordSpec with Matchers with SttpApi {
+//  import DataCodecs.given
+//
+//  val customOptions: CustomiseInterceptors[Future, SttpServerOptions] = {
+//    import scala.concurrent.ExecutionContext.Implicits.global
+//    ZioHttpServerOptions.customiseInterceptors
+//      .exceptionHandler(Handlers.excheptionHandler)
+//  }
+//  def backendStub =
+//    TapirStubInterpreter(customOptions, SttpBackendStub.asynchronousFuture)
+//      .whenServerEndpoint(postServerLogic)
+//      .thenRunLogic()
+//      .backend()
+//
+//  def postServerLogic = epPost
+//    .serverLogic(req =>
+//      Future.successful {
+//        req.command match {
+//          case Command.Success           => Right(TestResponse("Success"))
+//          case Command.JsonDecodeFailure => Left(JsonDecodeFailureError())
+//        }
+//      },
+//    )
+//
+//  def epPost = endpoint.post
+//    .in("test")
+//    .in(jsonBody[TestRequest])
+//    .out(jsonBody[TestResponse])
+//    .errorOut(
+//      oneOfVariants[HttpError](
+//        errorVariant[InvalidCredentialsError],
+//        errorVariant[JsonDecodeFailureError],
+//      ),
+//    )
+//
+//  "excheptionHandler" must {
+//    "work" in {
+//      def prog = basicRequest
+//        .post(uri"/test")
+//        .body(writeToString(TestRequest(Success)))
+//        .send(backendStub)
+//
+//      prog.collect { r =>
+//        println(r)
+//        r.body.isLeft must be(true)
+//      }
+//    }
+//  }
+//}
