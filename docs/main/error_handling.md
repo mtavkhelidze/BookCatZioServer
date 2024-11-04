@@ -4,10 +4,12 @@
 ---(((---(((-----------
 Book Cat ¯\_(ツ)_/¯ Zio
 </pre>
-### Error Flow
+
+### Error Handling Pipeline
+
 ```mermaid
 ---
-title: "Error Flow"
+title: "Error Pipeline"
 config:
     fontSize: 20
 ---
@@ -15,7 +17,9 @@ flowchart
     ServiceOne -- ServiceOneError --> ctrl
     ServiceTwo -- ServiceTwoError --> ctrl
     Service... -- Service . . . Error --> ctrl
-    ctrl(Controller) -- " ControlError(message) " --> toHttpError[[toHttpError]]
-    toHttpError -- " HttpError(message, cause) " --> json[[toJson]]
+    ctrl(Controller) -- " ControlError(messages: Nel[String]) " --> toHttpError[[toHttpError]]
+    toHttpError -- " HttpError(messages: Nel[String], cause) " --> json[[toJson]]
     json -- " HttpError(StatusCode, jsonBody) " --> Client
+    UnexpectedFailure((Boom!)) -- Throwable --> ExceptionHandler
+    ExceptionHandler -- " SystemError(messages: Nel[String], cause) " --> toHttpError
 ```
