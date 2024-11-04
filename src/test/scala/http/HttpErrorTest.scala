@@ -23,7 +23,7 @@ object HttpErrorTools {
     def toError: HttpError = s match {
       case "InvalidCredentialsError" => InvalidCredentialsError()
       case "JsonDecodeFailureError"  => JsonDecodeFailureError()
-      case "InternalServerError"     => JsonDecodeFailureError()
+      case "InternalServerError"     => InternalServerError()
     }
   }
 
@@ -42,8 +42,10 @@ object HttpErrorTools {
 }
 
 object HttpErrorTest extends JUnitRunnableSpec {
+
   import HttpErrorTools.*
-  private val jsonEncoding = suite("JSON Encoding") {
+
+  private val suits = suite("JSON encoding") {
     test("must be isomorphic") {
       for {
         errors <- ZIO.succeed(httpErrorChildren.toList)
@@ -52,19 +54,24 @@ object HttpErrorTest extends JUnitRunnableSpec {
         )
       } yield (assertTrue(result))
     }
+  } + suite("when encoded to JSON") {
+    test("must have all required fields present") {
+      val errors = httpErrorChildren.toList
+      for {
+        result <- ZIO.forall(errors) { e =>
+          ZIO.fromTry(Try {
+            val str = writeToString[HttpError](e)
+            str.contains(Defs.JSON_ENTITY_DISCRIMINATOR) &&
+              str.contains("message") &&
+              str.contains("details")
+          })
+        }
+      } yield assertTrue(result)
+    }
   }
-
   override def spec: Spec[TestEnvironment & Scope, Any] =
-    suite("http.HttpError")(jsonEncoding)
+    suite("http.HttpError")(suits)
 }
-//
-//  "DomainError JSON encoding/decoding" must {
-//    "be isomorphic" in {
-//      httpErrorChildren.foreach { error =>
-//        readFromString[HttpError](writeToString(error)) must equal(error)
-//      }
-//    }
-//  }
 //  "DomainError" when {
 //    "encoded to JSON" must {
 //      s"have ${Defs.JSON_ENTITY_DISCRIMINATOR}, message, and details fields present" in {
