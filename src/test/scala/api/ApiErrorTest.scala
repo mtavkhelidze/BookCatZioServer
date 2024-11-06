@@ -3,7 +3,7 @@
  */
 
 package ge.zgharbi.books
-package control
+package api
 
 import com.github.plokhotnyuk.jsoniter_scala.core.{readFromString, writeToString}
 import zio.*
@@ -19,7 +19,7 @@ object HttpErrorTools {
   import scala.deriving.Mirror
 
   extension (s: String) {
-    def toError: ControlError = s match {
+    def toError: ApiError = s match {
       case "InvalidCredentialsError" => InvalidCredentialsError()
       case "JsonDecodeFailureError"  => JsonDecodeFailureError()
       case "InternalServerError"     => InternalServerError()
@@ -27,21 +27,21 @@ object HttpErrorTools {
   }
 
   inline def httpErrorChildren(using
-    m: Mirror.SumOf[ControlError],
-  ): Iterator[ControlError] = {
+    m: Mirror.SumOf[ApiError],
+  ): Iterator[ApiError] = {
     constValueTuple[m.MirroredElemLabels].productIterator
       .map(_.toString)
       .map(_.toError)
   }
 
-  def readFromStringZio = (s: String) =>
-    ZIO.fromTry(Try(readFromString[ControlError](s)))
+  def readFromStringZio(s: String): Task[ApiError] =
+    ZIO.fromTry(Try(readFromString[ApiError](s)))
 
-  def writeToStringZio = (e: ControlError) =>
-    ZIO.fromTry(Try(writeToString[ControlError](e)))
+  def writeToStringZio(e: ApiError): Task[String] =
+    ZIO.fromTry(Try(writeToString[ApiError](e)))
 }
 
-object ControlErrorTest extends JUnitRunnableSpec {
+object ApiErrorTest extends JUnitRunnableSpec {
 
   import HttpErrorTools.*
 
@@ -60,7 +60,7 @@ object ControlErrorTest extends JUnitRunnableSpec {
       for {
         result <- ZIO.forall(errors) { e =>
           ZIO.fromTry(Try {
-            val str = writeToString[ControlError](e)
+            val str = writeToString[ApiError](e)
             println(str)
             true
 //            str.contains(Defs.JSON_ENTITY_DISCRIMINATOR) &&

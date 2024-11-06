@@ -28,7 +28,7 @@ object ApiErrorMessage {
 }
 
 // @note: This probably could be simpler
-sealed trait ControlError {
+sealed trait ApiError {
   def $tag: UUID
   def details: List[String]
   def error: MessageType
@@ -38,24 +38,24 @@ sealed case class InternalServerError(
   override val error: INTERNAL_SERVER_ERROR = constValue[INTERNAL_SERVER_ERROR],
   override val details: List[String] = List.empty,
   override val $tag: UUID = UUID.randomUUID(),
-) extends ControlError
+) extends ApiError
 
 case class JsonDecodeFailureError(
   override val error: JSON_DECODE_FAILURE = constValue[JSON_DECODE_FAILURE],
   override val details: List[String] = List.empty,
   override val $tag: UUID = UUID.randomUUID(),
-) extends ControlError
+) extends ApiError
 
 case class InvalidCredentialsError(
   override val error: INVALID_CREDENTIALS = constValue[INVALID_CREDENTIALS],
   override val details: List[String] = List.empty,
   override val $tag: UUID = UUID.randomUUID(),
-) extends ControlError
+) extends ApiError
 
-object ControlError {
+object ApiError {
   import domain.config.{jsonIterConfig, given}
 
-  given JsonValueCodec[ControlError] =
+  given JsonValueCodec[ApiError] =
     JsonCodecMaker.make(jsonIterConfig)
 
 //  given JsonValueCodec[HttpErrorMessage.MessageType] =
@@ -72,7 +72,7 @@ object ControlError {
 //      override def nullValue: MessageType = null.asInstanceOf[MessageType]
 //    }
 
-  given schema: Schema[ControlError] = Schema.derived[ControlError]
+  given schema: Schema[ApiError] = Schema.derived[ApiError]
 
   //  private val detailsMessageExample =
 //    List("Details about the error.", "Can be empty.")
@@ -86,7 +86,7 @@ object ControlError {
 //    }
 //
 //  }
-  inline def exmapleOf[E <: ControlError: ClassTag]: ControlError = {
+  inline def exmapleOf[E <: ApiError: ClassTag]: ApiError = {
     val c: ClassTag[E] = summon[ClassTag[E]]
     inline c match {
       case _: ClassTag[JsonDecodeFailureError] =>

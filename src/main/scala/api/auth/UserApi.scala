@@ -5,7 +5,7 @@
 package ge.zgharbi.books
 package api.auth
 
-import api.{ControlError, InvalidCredentialsError}
+import api.{ApiError, InvalidCredentialsError}
 import domain.{Email, JwtToken, Password}
 import domain.config.{jsonIterConfig, schemaConfig}
 
@@ -23,7 +23,7 @@ case class LoginResponse(jwtToken: JwtToken)
 object UserApi {
   import codecs.given
 
-  val login: Endpoint[Unit, LoginRequest, ControlError, LoginResponse, Any] =
+  val login: Endpoint[Unit, LoginRequest, ApiError, LoginResponse, Any] =
     endpoint.post
       .tag("Auth")
       .in("auth" / "user" / "login")
@@ -33,7 +33,7 @@ object UserApi {
         oneOf(
           oneOfVariantClassMatcher(
             statusCode(StatusCode.UnprocessableEntity)
-              .and(jsonBody[ControlError].default(ControlError.exmapleOf[InvalidCredentialsError])),
+              .and(jsonBody[ApiError].default(ApiError.exmapleOf[InvalidCredentialsError])),
             classTag[InvalidCredentialsError].runtimeClass,
           ),
         ),
