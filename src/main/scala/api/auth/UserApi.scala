@@ -33,7 +33,10 @@ object UserApi {
         oneOf(
           oneOfVariantClassMatcher(
             statusCode(StatusCode.UnprocessableEntity)
-              .and(jsonBody[ApiError].default(ApiError.exmapleOf[InvalidCredentialsError])),
+              .and(
+                jsonBody[ApiError]
+                  .default(ApiError.exmapleOf[InvalidCredentialsError]),
+              ),
             classTag[InvalidCredentialsError].runtimeClass,
           ),
         ),
